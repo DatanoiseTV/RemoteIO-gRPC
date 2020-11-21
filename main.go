@@ -105,7 +105,7 @@ func (s *server) SpiRead(ctx context.Context, in *remoteio.SPIMessage) (*remotei
 	return &remoteio.SPIMessage{Bytes: buffer, Timestamp: now}, nil
 }
 func (s *server) I2CRead(ctx context.Context, in *remoteio.I2CMessage) (*remoteio.I2CMessage, error){
-	i2c, err := i2c.NewI2C(byte(in.GetAddr()), 2)
+	i2c, err := i2c.NewI2C(byte(in.GetAddr()), 1)
 	if err != nil { log.Println(err) }
 	defer i2c.Close()
 
