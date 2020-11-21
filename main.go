@@ -90,7 +90,7 @@ func (s *server) SpiRead(ctx context.Context, in *remoteio.SPIMessage) (*remotei
 		log.Println("Could not use SPI.")
 	}
 	if in.GetCs() >= 0 { rpio.SpiChipSelect(uint8(in.GetCs())) }
-	if in.GetSpeed() >= 1000000 && in.GetSpeed() <= 16000000 { rpio.SpiSpeed(int(in.GetSpeed())) }
+	if in.GetSpeed() >= 1 && in.GetSpeed() <= 18000000 { rpio.SpiSpeed(int(in.GetSpeed())) }
 
 	rpio.SpiExchange(buffer_u8);
 
