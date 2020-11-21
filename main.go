@@ -59,6 +59,15 @@ func (s *server) AnalogRead(ctx context.Context, in *remoteio.AnalogState) (*rem
 	return &remoteio.AnalogState{Pin: in.GetPin(), Value: 0}, nil
 }
 
+func (s *server) AnalogWrite(ctx context.Context, in *remoteio.AnalogState) (*remoteio.AnalogState, error){
+	log.Printf("AnalogWrite: %v", in.GetPin())
+	pin := rpio.Pin(in.GetPin())
+	pin.Mode(rpio.Pwm)
+	pin.Freq(64000)
+	pin.DutyCycle(in.GetValue() & 0xFF, 256)
+	return &remoteio.AnalogState{Pin: in.GetPin(), Value: 0}, nil
+}
+
 func (s *server) SPIRead(ctx context.Context, in *remoteio.SPIMessage) (*remoteio.SPIMessage, error){
 	buffer := in.GetBytes()
 	buffer_u8 := []byte{}
