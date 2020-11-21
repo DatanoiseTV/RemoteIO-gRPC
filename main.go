@@ -78,7 +78,7 @@ func (s *server) AnalogWrite(ctx context.Context, in *remoteio.AnalogState) (*re
 	return &remoteio.AnalogState{Pin: in.GetPin(), Value: 0, Timestamp: now}, nil
 }
 
-func (s *server) SPIRead(ctx context.Context, in *remoteio.SPIMessage) (*remoteio.SPIMessage, error){
+func (s *server) SpiRead(ctx context.Context, in *remoteio.SPIMessage) (*remoteio.SPIMessage, error){
 	buffer := in.GetBytes()
 	buffer_u8 := []byte{}
 	for i := 0; i<len(buffer); i++{
