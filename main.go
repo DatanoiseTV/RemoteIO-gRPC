@@ -82,7 +82,7 @@ func (s *server) SpiRead(ctx context.Context, in *remoteio.SPIMessage) (*remotei
 	buffer := in.GetBytes()
 	buffer_u8 := []byte{}
 	log.Printf("Length: %v", len(buffer))
-	for i := 0; i<len(buffer); i++{
+	for i := 0; i<len(buffer)-1; i++{
 		buffer_u8[i] = byte(buffer[i])
 	}
 	//log.Printf("SPIRead: %v", in.GetBytes())
@@ -94,7 +94,7 @@ func (s *server) SpiRead(ctx context.Context, in *remoteio.SPIMessage) (*remotei
 
 	rpio.SpiExchange(buffer_u8);
 	buffer = []uint32{}
-	for i := 0; i<len(buffer_u8); i++ {
+	for i := 0; i<len(buffer_u8)-1; i++ {
 		buffer[i] = uint32(buffer_u8[i])
 	}
 	now := timestamppb.Now()
