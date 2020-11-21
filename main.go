@@ -81,6 +81,7 @@ func (s *server) AnalogWrite(ctx context.Context, in *remoteio.AnalogState) (*re
 func (s *server) SpiRead(ctx context.Context, in *remoteio.SPIMessage) (*remoteio.SPIMessage, error){
 	buffer := in.GetBytes()
 	buffer_u8 := []byte{}
+	log.Printf("Length: %v", len(buffer))
 	for i := 0; i<len(buffer); i++{
 		buffer_u8[i] = byte(buffer[i])
 	}
