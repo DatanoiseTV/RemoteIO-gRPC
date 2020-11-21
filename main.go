@@ -54,7 +54,7 @@ func (s *server) DigitalWrite(ctx context.Context, in *remoteio.DigitalState) (*
 }
 
 func (s *server) AnalogRead(ctx context.Context, in *remoteio.AnalogState) (*remoteio.AnalogState, error){
-	log.Printf("AnalogRead: %v", in.GetPin()):w
+	log.Printf("AnalogRead: %v", in.GetPin())
 	return &remoteio.AnalogState{Pin: in.GetPin(), Value: 0}, nil
 }
 
