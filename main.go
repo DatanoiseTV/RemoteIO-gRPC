@@ -20,7 +20,7 @@ type server struct {
 }
 
 func (s *server) PinMode(ctx context.Context, in *remoteio.PinModeMessage) (*remoteio.PinModeMessage, error){
-	log.Printf("Pin mode: Pin %v: %v", in.GetPin(), in.GetMode())
+	//log.Printf("Pin mode: Pin %v: %v", in.GetPin(), in.GetMode())
 
 	pin := rpio.Pin(in.GetPin())
 	if in.GetMode() == remoteio.PinModeMessage_ANALOG_IN || in.GetMode() == remoteio.PinModeMessage_DIGITAL_IN {
@@ -34,7 +34,7 @@ func (s *server) PinMode(ctx context.Context, in *remoteio.PinModeMessage) (*rem
 }
 
 func (s *server) DigitalRead(ctx context.Context, in *remoteio.DigitalState) (*remoteio.DigitalState, error){
-	log.Printf("DigitalRead: Pin %v", in.GetPin())
+	//log.Printf("DigitalRead: Pin %v", in.GetPin())
 	pin := rpio.Pin(in.GetPin())
 	state := false
 	if pin.Read() == rpio.Low {
@@ -47,7 +47,7 @@ func (s *server) DigitalRead(ctx context.Context, in *remoteio.DigitalState) (*r
 }
 
 func (s *server) DigitalWrite(ctx context.Context, in *remoteio.DigitalState) (*remoteio.DigitalState, error){
-	log.Printf("DigitalWrite: Pin %v: %v", in.GetPin(), in.GetState())
+	//log.Printf("DigitalWrite: Pin %v: %v", in.GetPin(), in.GetState())
 	pin := rpio.Pin(in.GetPin())
 	if in.GetState() == false {
 		pin.Write(rpio.Low)
@@ -59,13 +59,13 @@ func (s *server) DigitalWrite(ctx context.Context, in *remoteio.DigitalState) (*
 }
 
 func (s *server) AnalogRead(ctx context.Context, in *remoteio.AnalogState) (*remoteio.AnalogState, error){
-	log.Printf("AnalogRead: Pin %v", in.GetPin())
+	//log.Printf("AnalogRead: Pin %v", in.GetPin())
 	now := timestamppb.Now()
 	return &remoteio.AnalogState{Pin: in.GetPin(), Value: 0, Timestamp: now}, nil
 }
 
 func (s *server) AnalogWrite(ctx context.Context, in *remoteio.AnalogState) (*remoteio.AnalogState, error){
-	log.Printf("AnalogWrite: Pin %v: %v", in.GetPin(), in.GetValue())
+	//log.Printf("AnalogWrite: Pin %v: %v", in.GetPin(), in.GetValue())
 	pin := rpio.Pin(in.GetPin())
 	pin.Mode(rpio.Pwm)
 	pin.Freq(64000)
@@ -80,7 +80,7 @@ func (s *server) SPIRead(ctx context.Context, in *remoteio.SPIMessage) (*remotei
 	for i := 0; i<len(buffer); i++{
 		buffer_u8[i] = byte(buffer[i])
 	}
-	log.Printf("SPIRead: %v", in.GetBytes())
+	//log.Printf("SPIRead: %v", in.GetBytes())
 	if err := rpio.SpiBegin(rpio.Spi0); err != nil {
 		log.Println("Could not use SPI.")
 	}
