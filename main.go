@@ -122,9 +122,13 @@ func (s *server) I2CRead(ctx context.Context, in *remoteio.I2CMessage) (*remotei
 	ret := []byte{}
 	i2c.ReadBytes(ret)
 
-	buffer = make([]uint32, len(ret))
-	for i := 0; i<len(buffer_u8)-1; i++ {
-		buffer[i] = uint32(ret[i])
+	if len(ret) > 0{
+		buffer = make([]uint32, len(ret))
+		for i := 0; i<len(buffer_u8)-1; i++ {
+			buffer[i] = uint32(ret[i])
+		}
+	} else {
+		buffer = []uint32{0x0}
 	}
 
 	now := timestamppb.Now()
