@@ -5,14 +5,18 @@ import (
 	"fmt"
 	remoteio "github.com/DatanoiseTV/RemoteIO-gRPC-proto"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"log"
 	"net"
+
 	"os"
 	"os/signal"
+
 	"syscall"
 
 	"github.com/stianeikeland/go-rpio"
+
 )
 
 type server struct {
@@ -114,6 +118,7 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer()
+	reflection.Register(grpcServer)
 
 	remoteio.RegisterRemoteIOServer(grpcServer, &server{})
 	if err := grpcServer.Serve(lis); err != nil {
