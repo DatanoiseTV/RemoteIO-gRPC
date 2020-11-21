@@ -1,0 +1,45 @@
+syntax = "proto3";
+package remoteio;
+
+message DigitalState {
+  uint32 pin = 1;
+  bool state = 2;
+}
+
+message AnalogState {
+  uint32 pin = 1;
+  uint32 value = 2;
+}
+
+message PinModeMessage {
+  enum PortType {
+    DIGITAL_IN = 0;
+    DIGITAL_OUT = 1;
+    ANALOG_IN = 2;
+    ANALOG_OUT = 3;
+  }
+  uint32 pin = 1;
+  PortType mode = 2;
+}
+
+message SPIMessage{
+ repeated uint32 bytes = 1;
+}
+
+message SPIConfig{
+  uint32 speed = 1;
+  uint32 cs = 2;
+  uint32 mode = 3;
+}
+
+service RemoteIO {
+  rpc pinMode(PinModeMessage) returns (PinModeMessage){};
+  rpc digitalRead(DigitalState) returns (DigitalState){};
+  rpc digitalWrite(DigitalState) returns (DigitalState){};
+  rpc analogRead(AnalogState) returns (AnalogState){};
+  rpc analogWrite(AnalogState) returns (AnalogState){};
+
+  rpc spiConfig(SPIConfig) returns (SPIConfig){};
+  rpc spiRead(SPIMessage) returns (SPIMessage){};
+  rpc spiWrite(SPIMessage) returns (SPIMessage){};
+}
