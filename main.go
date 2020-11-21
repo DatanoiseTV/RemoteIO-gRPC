@@ -7,7 +7,7 @@ import (
 	"log"
 	"google.golang.org/grpc"
 	"os"
-	remoteio "remoteio/rio"
+	remoteio "github.com/DatanoiseTV/RemoteIO-gRPC/rio"
 	"syscall"
 
 	"github.com/stianeikeland/go-rpio"
