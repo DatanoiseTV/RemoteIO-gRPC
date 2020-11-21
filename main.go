@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc"
 	"os"
 	remoteio "github.com/DatanoiseTV/RemoteIO-gRPC/rio"
+	"os/signal"
 	"syscall"
 
 	"github.com/stianeikeland/go-rpio"
@@ -81,6 +82,14 @@ func main() {
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
+
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, os.Interrupt)
+	go func() {
+		<-sigs
+		fmt.Printf("You pressed ctrl + C. User interrupted infinite loop.")
+		os.Exit(0)
+	}()
 
 
 }
