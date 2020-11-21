@@ -5,6 +5,7 @@ import (
 	"fmt"
 	remoteio "github.com/DatanoiseTV/RemoteIO-gRPC-proto"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"log"
 	"net"
 	"os"
@@ -28,7 +29,8 @@ func (s *server) PinMode(ctx context.Context, in *remoteio.PinModeMessage) (*rem
 		pin.Output()
 	}
 
-	return &remoteio.PinModeMessage{Pin: in.GetPin(), Mode: in.GetMode()}, nil
+	now := timestamppb.Now()
+	return &remoteio.PinModeMessage{Pin: in.GetPin(), Mode: in.GetMode(), Timestamp: now}, nil
 }
 
 func (s *server) DigitalRead(ctx context.Context, in *remoteio.DigitalState) (*remoteio.DigitalState, error){
@@ -40,7 +42,8 @@ func (s *server) DigitalRead(ctx context.Context, in *remoteio.DigitalState) (*r
 	} else if pin.Read() == rpio.High {
 		state = true
 	}
-	return &remoteio.DigitalState{Pin: in.GetPin(), State: state}, nil
+	now := timestamppb.Now()
+	return &remoteio.DigitalState{Pin: in.GetPin(), State: state, Timestamp: now}, nil
 }
 
 func (s *server) DigitalWrite(ctx context.Context, in *remoteio.DigitalState) (*remoteio.DigitalState, error){
@@ -51,12 +54,14 @@ func (s *server) DigitalWrite(ctx context.Context, in *remoteio.DigitalState) (*
 	} else if in.GetState() == true {
 		pin.Write(rpio.High)
 	}
-	return &remoteio.DigitalState{Pin: in.GetPin(), State: in.GetState()}, nil
+	now := timestamppb.Now()
+	return &remoteio.DigitalState{Pin: in.GetPin(), State: in.GetState(), Timestamp: now}, nil
 }
 
 func (s *server) AnalogRead(ctx context.Context, in *remoteio.AnalogState) (*remoteio.AnalogState, error){
 	log.Printf("AnalogRead: Pin %v", in.GetPin())
-	return &remoteio.AnalogState{Pin: in.GetPin(), Value: 0}, nil
+	now := timestamppb.Now()
+	return &remoteio.AnalogState{Pin: in.GetPin(), Value: 0, Timestamp: now}, nil
 }
 
 func (s *server) AnalogWrite(ctx context.Context, in *remoteio.AnalogState) (*remoteio.AnalogState, error){
@@ -65,7 +70,8 @@ func (s *server) AnalogWrite(ctx context.Context, in *remoteio.AnalogState) (*re
 	pin.Mode(rpio.Pwm)
 	pin.Freq(64000)
 	pin.DutyCycle(in.GetValue() & 0xFF, 256)
-	return &remoteio.AnalogState{Pin: in.GetPin(), Value: 0}, nil
+	now := timestamppb.Now()
+	return &remoteio.AnalogState{Pin: in.GetPin(), Value: 0, Timestamp: now}, nil
 }
 
 func (s *server) SPIRead(ctx context.Context, in *remoteio.SPIMessage) (*remoteio.SPIMessage, error){
@@ -86,7 +92,8 @@ func (s *server) SPIRead(ctx context.Context, in *remoteio.SPIMessage) (*remotei
 	for i := 0; i<len(buffer_u8); i++ {
 		buffer[i] = uint32(buffer_u8[i])
 	}
-	return &remoteio.SPIMessage{Bytes: buffer}, nil
+	now := timestamppb.Now()
+	return &remoteio.SPIMessage{Bytes: buffer, Timestamp: now}, nil
 }
 
 func main() {
