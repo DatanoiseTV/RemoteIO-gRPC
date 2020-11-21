@@ -7,12 +7,10 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"log"
-	"math/rand"
-
+	remoteio "github.com/DatanoiseTV/RemoteIO-gRPC-proto"
 	//"math/rand"
 	"os"
 	"os/signal"
-	remoteio "github.com/DatanoiseTV/RemoteIO-gRPC-proto"
 	"time"
 )
 
@@ -82,8 +80,11 @@ func BlinkLED(c remoteio.RemoteIOClient, fps int) {
 		defer cancel()
 
 		now := timestamppb.Now()
-		r, err := c.AnalogWrite(ctx, &remoteio.AnalogState{Pin: 12, Value: uint32(rand.Intn(254)), Timestamp: now })
+		//r, err := c.AnalogWrite(ctx, &remoteio.AnalogState{Pin: 12, Value: uint32(rand.Intn(254)), Timestamp: now })
 		//r, err := c.DigitalWrite(ctx, &remoteio.DigitalState{Pin: 12, State: state, Timestamp: now})
+
+		data := []uint32{0x42, 0x23, 0x42, 0x23}
+		r, err := c.SpiRead(ctx, &remoteio.SPIMessage{Cs: 0, Speed: 1000000, Bytes: data, Timestamp: now})
 		if err != nil {
 			log.Println("Did not get response.")
 		} else {
