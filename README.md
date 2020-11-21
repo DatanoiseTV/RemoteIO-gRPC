@@ -2,6 +2,11 @@
 Remote I/O service for RaspberryPi using gRPC (and Protobuf).
 Allows to use SPI, Analog I/O (with external ADC/DAC) and Digital I/O from any client and language supporting gRPC.
 
+## Installation
+```
+go get github.com/DatanoiseTV/RemoteIO-gRPC
+```
+
 ## Why?
 
 Sometimes you are working on a project or need to test a new electronics component and need some GPIO quickly
