@@ -2,6 +2,17 @@
 Remote I/O service for RaspberryPi using gRPC (and Protobuf).
 Allows to use SPI, Analog I/O (with external ADC/DAC) and Digital I/O from any client and language supporting gRPC.
 
+## Why?
+
+Sometimes you are working on a project or need to test a new electronics component and need some GPIO quickly
+usable from your main computer. Running this software gives you full access to the GPIO, I2C and SPI peripherals
+on the Pi3/4.
+
+## Internals
+It is based on Googles gRPC framework, which they use to power most of their inter-server/inter-service communication.
+gRPC provides a RPC (Remote Procedure Call) interface, which allows to call remote functions / procedures. The serialization
+magic behind that is Google Protobuf.
+
 ## Protocol Implementation
 ```
 service RemoteIO {
