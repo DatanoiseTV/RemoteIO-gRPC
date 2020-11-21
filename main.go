@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
-	"net"
-	"log"
+	remoteio "github.com/DatanoiseTV/RemoteIO-gRPC-proto"
 	"google.golang.org/grpc"
+	"log"
+	"net"
 	"os"
-	remoteio "github.com/DatanoiseTV/RemoteIO-gRPC/rio"
 	"os/signal"
 	"syscall"
 
@@ -57,6 +57,21 @@ func (s *server) DigitalWrite(ctx context.Context, in *remoteio.DigitalState) (*
 func (s *server) AnalogRead(ctx context.Context, in *remoteio.AnalogState) (*remoteio.AnalogState, error){
 	log.Printf("AnalogRead: %v", in.GetPin())
 	return &remoteio.AnalogState{Pin: in.GetPin(), Value: 0}, nil
+}
+
+func (s *server) SPIRead(ctx context.Context, in *remoteio.SPIMessage) (*remoteio.SPIMessage, error){
+	buffer := in.GetBytes()
+	buffer_u8 := []byte{}
+	for i := 0; i<len(buffer); i++{
+		buffer_u8[i] = byte(buffer[i])
+	}
+	log.Printf("SPIRead: %v", in.GetBytes())
+	rpio.SpiExchange(buffer_u8);
+	buffer = []uint32{}
+	for i := 0; i<len(buffer_u8); i++ {
+		buffer[i] = uint32(buffer_u8[i])
+	}
+	return &remoteio.SPIMessage{Bytes: buffer}, nil
 }
 
 func main() {
