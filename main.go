@@ -2,12 +2,15 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"log"
 	"google.golang.org/grpc"
+	"os"
 	remoteio "remoteio/rio"
+	"syscall"
 
-    "github.com/stianeikeland/go-rpio"
+	"github.com/stianeikeland/go-rpio"
 )
 
 type server struct {
@@ -56,14 +59,20 @@ func (s *server) AnalogRead(ctx context.Context, in *remoteio.AnalogState) (*rem
 }
 
 func main() {
+	if os.Getuid() != 0 {
+		fmt.Println("Sorry, root required.")
+		os.Exit(1)
+	}
+
+	syscall.Setpgid(0, 0); syscall.Setpriority(syscall.PRIO_PGRP, 0, -20)
+
+	if err := rpio.Open(); err != nil {
+		panic(err)
+	}
+
 	lis, err := net.Listen("tcp", ":9000")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
-	}
-
-	err = rpio.Open()
-	if err != nil {
-		log.Fatalf("Could not open GPIO (not Pi?): %v", err)
 	}
 
 	grpcServer := grpc.NewServer()
