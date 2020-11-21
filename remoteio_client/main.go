@@ -5,10 +5,14 @@ import (
 	"fmt"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"log"
+	"math/rand"
+
+	//"math/rand"
 	"os"
 	"os/signal"
-	remoteio "remoteio/rio"
+	remoteio "github.com/DatanoiseTV/RemoteIO-gRPC-proto"
 	"time"
 )
 
@@ -29,7 +33,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	r, err := c.PinMode(ctx, &remoteio.PinModeMessage{Pin: 17, Mode: remoteio.PinModeMessage_DIGITAL_OUT})
+	r, err := c.PinMode(ctx, &remoteio.PinModeMessage{Pin: 12, Mode: remoteio.PinModeMessage_ANALOG_OUT})
 	if err != nil {
 		log.Fatal("Did not get message.")
 	}
@@ -43,26 +47,59 @@ func main() {
 		fmt.Printf("You pressed ctrl + C. User interrupted infinite loop.")
 		os.Exit(0)
 	}()
-	BlinkLED(c)
+
+	fpsCounter := 0
+
+	BlinkLED(c, fpsCounter)
 
 
 
 }
 
-func BlinkLED(c remoteio.RemoteIOClient) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
+func BlinkLED(c remoteio.RemoteIOClient, fps int) {
 
 	state := false
+
+	latency_avg := int64(0)
+
+	go func() {
+		ticker := time.NewTicker(time.Second)
+
+		for{
+			select {
+			case <-ticker.C:
+				log.Printf("FPS: %v", fps)
+				log.Printf("Average latency (ms): %v", float32(latency_avg)/1000.0)
+				fps = 0
+				latency_avg = 0
+
+			}
+		}
+	}();
+
 	for {
-		r, err := c.DigitalWrite(ctx, &remoteio.DigitalState{Pin: 17, State: state})
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+
+		now := timestamppb.Now()
+		r, err := c.AnalogWrite(ctx, &remoteio.AnalogState{Pin: 12, Value: uint32(rand.Intn(254)), Timestamp: now })
+		//r, err := c.DigitalWrite(ctx, &remoteio.DigitalState{Pin: 12, State: state, Timestamp: now})
 		if err != nil {
 			log.Println("Did not get response.")
 		} else {
-			log.Printf("Response: %v", r.GetPin())
+			receiveTime := r.GetTimestamp().AsTime()
+			latency := receiveTime.Sub(now.AsTime()).Milliseconds()
+			if 1 == 0 {
+				log.Printf("Latency: %v", latency)
+
+			}
+			latency_avg += latency
+
 		}
 
+		fps++
+
 		state = !state
-		time.Sleep(time.Millisecond * 50)
+		//time.Sleep(time.Millisecond * 100)
 	}
 }
