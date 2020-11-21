@@ -66,6 +66,12 @@ func (s *server) SPIRead(ctx context.Context, in *remoteio.SPIMessage) (*remotei
 		buffer_u8[i] = byte(buffer[i])
 	}
 	log.Printf("SPIRead: %v", in.GetBytes())
+	if err := rpio.SpiBegin(rpio.Spi0); err != nil {
+		log.Println("Could not use SPI.")
+	}
+	if in.GetCs() >= 0 { rpio.SpiChipSelect(uint8(in.GetCs())) }
+	if in.GetSpeed() >= 1000000 && in.GetSpeed() <= 16000000 { rpio.SpiSpeed(int(in.GetSpeed())) }
+
 	rpio.SpiExchange(buffer_u8);
 	buffer = []uint32{}
 	for i := 0; i<len(buffer_u8); i++ {
