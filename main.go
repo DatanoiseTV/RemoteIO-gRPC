@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	remoteio "github.com/DatanoiseTV/RemoteIO-gRPC-proto"
+	"github.com/d2r2/go-i2c"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -102,6 +103,32 @@ func (s *server) SpiRead(ctx context.Context, in *remoteio.SPIMessage) (*remotei
 	}
 	now := timestamppb.Now()
 	return &remoteio.SPIMessage{Bytes: buffer, Timestamp: now}, nil
+}
+func (s *server) I2cRead(ctx context.Context, in *remoteio.I2CMessage) (*remoteio.I2CMessage, error){
+	i2c, err := i2c.NewI2C(byte(in.GetAddr()), 2)
+	if err != nil { log.Println(err) }
+	defer i2c.Close()
+
+	buffer := in.GetBytes()
+	buffer_u8 := make([]byte, len(buffer))
+
+	for i := 0; i<len(buffer)-1; i++{
+		buffer_u8[i] = byte(buffer[i])
+	}
+
+	_, err = i2c.WriteBytes(buffer_u8)
+	if err != nil { log.Println(err) }
+
+	ret := []byte{}
+	i2c.ReadBytes(ret)
+
+	buffer = make([]uint32, len(ret))
+	for i := 0; i<len(buffer_u8)-1; i++ {
+		buffer[i] = uint32(ret[i])
+	}
+
+	now := timestamppb.Now()
+	return &remoteio.I2CMessage{Bytes: buffer, Timestamp: now}, nil
 }
 
 func main() {
