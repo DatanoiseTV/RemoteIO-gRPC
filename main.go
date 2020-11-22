@@ -10,6 +10,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"log"
 	"net"
+	"time"
 
 	"os"
 	"os/signal"
@@ -134,6 +135,17 @@ func (s *server) I2CRead(ctx context.Context, in *remoteio.I2CMessage) (*remotei
 	now := timestamppb.Now()
 	return &remoteio.I2CMessage{Bytes: buffer, Timestamp: now}, nil
 }
+
+
+func (s *server) SubscribeInterrupt(src remoteio.RemoteIO_SubscribeInterruptServer) error {
+
+
+	for {
+		src.Send(&remoteio.DigitalState{Pin: 42, State: true})
+		time.Sleep(time.Millisecond * 500)
+	}
+}
+
 
 func main() {
 	if os.Getuid() != 0 {
