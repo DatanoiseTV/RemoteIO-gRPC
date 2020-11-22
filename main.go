@@ -137,7 +137,7 @@ func (s *server) I2CRead(ctx context.Context, in *remoteio.I2CMessage) (*remotei
 }
 
 
-func (s *server) SubscribeInterrupt(src remoteio.RemoteIO_SubscribeInterruptServer) error {
+func (s *server) SubscribeInterrupt(in *remoteio.InterruptMessage, src remoteio.RemoteIO_SubscribeInterruptServer) error {
 
 
 	for {
