@@ -10,15 +10,12 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"log"
 	"net"
-	"time"
-
 	"os"
 	"os/signal"
 
 	"syscall"
 
 	"github.com/stianeikeland/go-rpio"
-
 )
 
 type server struct {
@@ -138,11 +135,26 @@ func (s *server) I2CRead(ctx context.Context, in *remoteio.I2CMessage) (*remotei
 
 
 func (s *server) SubscribeInterrupt(in *remoteio.InterruptMessage, src remoteio.RemoteIO_SubscribeInterruptServer) error {
+	pin := rpio.Pin(in.GetPin())
+	pin.Input()
+	pin.PullUp()
 
+	switch in.GetTriggerType(){
+	case remoteio.InterruptMessage_RISING_EDGE:
+		pin.Detect(rpio.RiseEdge)
+		break
+	case remoteio.InterruptMessage_FALLING_EDGE:
+		pin.Detect(rpio.FallEdge)
+		break
+	case remoteio.InterruptMessage_BOTH_EDGE:
+		pin.Detect(rpio.AnyEdge)
+		break
+	}
 
 	for {
-		src.Send(&remoteio.DigitalState{Pin: 42, State: true})
-		time.Sleep(time.Millisecond * 500)
+		if pin.EdgeDetected() {
+			src.Send(&remoteio.DigitalState{Pin: in.GetPin(), State: true})
+		}
 	}
 }
 
