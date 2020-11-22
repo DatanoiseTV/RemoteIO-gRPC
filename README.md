@@ -29,6 +29,8 @@ service RemoteIO {
 
   rpc spiRead(SPIMessage) returns (SPIMessage){};
   rpc spiWrite(SPIMessage) returns (SPIMessage){};
+
+  rpc subscribeInterrupt(InterruptMessage) returns (stream DigitalState){};
 }
 ```
 
