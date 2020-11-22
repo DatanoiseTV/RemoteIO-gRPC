@@ -158,7 +158,7 @@ func (s *server) SubscribeInterrupt(in *remoteio.InterruptMessage, src remoteio.
 			if(pinState == 0){ boolState = false }
 			if(pinState == 1){ boolState = true }
 
-			src.Send(&remoteio.DigitalState{Pin: in.GetPin(), State: boolState})
+			src.Send(&remoteio.DigitalState{Pin: in.GetPin(), State: boolState, Timestamp: timestamppb.Now()})
 		}
 	}
 }
