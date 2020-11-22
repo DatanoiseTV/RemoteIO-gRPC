@@ -153,7 +153,12 @@ func (s *server) SubscribeInterrupt(in *remoteio.InterruptMessage, src remoteio.
 
 	for {
 		if pin.EdgeDetected() {
-			src.Send(&remoteio.DigitalState{Pin: in.GetPin(), State: true})
+			pinState := pin.ReadPull()
+			boolState := false
+			if(pinState == 0){ boolState = false }
+			if(pinState == 1){ boolState = true }
+
+			src.Send(&remoteio.DigitalState{Pin: in.GetPin(), State: boolState})
 		}
 	}
 }
